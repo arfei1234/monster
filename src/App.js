@@ -1,25 +1,53 @@
-import logo from './logo.svg';
+import React, {Component} from 'react';
 import './App.css';
+import { CardList } from './component/CardList/cardlist.component';
+import { SearchBox } from './component/Searchbox/searchbox.component';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component{
+  constructor(){
+    super();
+    this.state = {
+      monsters :[
+      
+      ],
+      searchField: '',
+      value:''
+    }
+  }
+
+  componentDidMount(){
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(foo => foo.json())
+      .then(foo => this.setState({monsters:foo}))
+
+  }
+
+  handleChange = e =>{
+    this.setState({searchField: e.target.value}) 
+  }
+
+  render(){ 
+    const {monsters,searchField} = this.state;
+    const filteredMonster = monsters.filter(monster=>monster.name.toLowerCase().includes(searchField.toLowerCase())
+    )
+    return (
+      <div className="App">
+        <h1>Monsters</h1>
+        <form onSubmit={(e)=>{console.log(this.state.value);
+          e.preventDefault();
+        }}>
+          <input type='text' value={this.state.value} onChange={e=>this.setState({value: e.target.value})}></input>
+          <input type='submit' value='Submit'></input>
+        </form>
+        <SearchBox placeholder='Please search' 
+        handleChange ={this.handleChange  
+            }/>
+        <CardList monsters={filteredMonster}/>
+        
+      </div>
+    );
+  }
 }
+
 
 export default App;
